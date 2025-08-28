@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genetic Drift Simulation with Real-World Context</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3 {
+            color: var(--primary);
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input[type="number"], input[type="range"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .instructions {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid var(--secondary);
+            margin-bottom: 20px;
+        }
+        .scenario {
+            background-color: #fff4e6;
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+        }
+        .scenario h4 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #f1f1f1;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background: var(--secondary);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .scenario-button {
+            background-color: var(--accent);
+        }
+        .scenario-button:hover {
+            background-color: #c0392b;
+        }
+        .force-controls {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Genetic Drift Simulation with Real-World Context</h1>
+    
+    <div class="container">
+        <h2>About Genetic Drift</h2>
+        <p>Genetic drift is a mechanism of evolution that causes random changes in allele frequencies in a population, especially in small populations. This simulation demonstrates how allele frequencies change over generations due to random processes and other evolutionary forces.</p>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab(0)">Instructions</div>
+            <div class="tab" onclick="switchTab(1)">Real-World Cases</div>
+            <div class="tab" onclick="switchTab(2)">Forces & Considerations</div>
+        </div>
+        
+        <div class="tab-content active">
+            <div class="instructions">
+                <h3>Instructions</h3>
+                <ol>
+                    <li>Adjust the parameters below to set up your simulation</li>
+                    <li>Select evolutionary forces to apply (optional)</li>
+                    <li>Click "Run Simulation" to see the results</li>
+                    <li>View the graphs and statistics to analyze genetic drift</li>
+                    <li>Use "Download Data" to export your results for further analysis</li>
+                    <li>Try the preset scenarios to see real-world examples</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="tab-content">
+            <h3>Real-World Cases of Genetic Drift</h3>
+            
+            <div class="scenario">
+                <h4>1. Founder Effect (Amish Population)</h4>
+                <p>The Amish community in Pennsylvania descended from about 200 German founders. This small founding population led to higher frequencies of certain genetic disorders like Ellis-van Creveld syndrome, which is rare in the general population but more common among the Amish due to genetic drift.</p>
+                <button class="scenario-button" onclick="applyScenario('founder')">Simulate Founder Effect</button>
+            </div>
+            
+            <div class="scenario">
+                <h4>2. Population Bottleneck (Northern Elephant Seals)</h4>
+                <p>In the 1890s, northern elephant seals were hunted to near extinction, with only about 20 individuals remaining. Though the population has recovered to over 100,000, they have significantly less genetic diversity compared to southern elephant seals that didn't experience such a severe bottleneck.</p>
+                <button class="scenario-button" onclick="applyScenario('bottleneck')">Simulate Population Bottleneck</button>
+            </div>
+            
+            <div class="scenario">
+                <h4>3. Island Biogeography (Galápagos Finches)</h4>
+                <p>Small populations of finches colonizing different Galápagos Islands experienced genetic drift, leading to variations in beak size and other traits. This drift, combined with natural selection, contributed to the speciation observed by Darwin.</p>
+                <button class="scenario-button" onclick="applyScenario('island')">Simulate Island Colonization</button>
+            </div>
+            
+            <div class="scenario">
+                <h4>4. Conservation Genetics (Cheetahs)</h4>
+                <p>Cheetahs experienced a population bottleneck about 10,000 years ago, resulting in extremely low genetic diversity today. This makes them more vulnerable to diseases and environmental changes, illustrating the conservation challenges posed by genetic drift.</p>
+                <button class="scenario-button" onclick="applyScenario('cheetah')">Simulate Conservation Challenge</button>
+            </div>
+        </div>
+        
+        <div class="tab-content">
+            <h3>Forces Interacting with Genetic Drift</h3>
+            
+            <div class="force-controls">
+                <h4>Natural Selection</h4>
+                <p>When combined with genetic drift, selection can be:</p>
+                <ul>
+                    <li><strong>Directional</strong>: Favors one extreme phenotype</li>
+                    <li><strong>Stabilizing</strong>: Favors intermediate phenotypes</li>
+                    <li><strong>Disruptive</strong>: Favors both extremes</li>
+                </ul>
+                <p>In small populations, drift can override weak selection, but strong selection can dominate drift.</p>
+            </div>
+            
+            <div class="force-controls">
+                <h4>Gene Flow</h4>
+                <p>Migration between populations can:</p>
+                <ul>
+                    <li>Introduce new alleles (counteracting drift)</li>
+                    <li>Homogenize populations (preventing divergence)</li>
+                    <li>Sometimes introduce maladaptive genes</li>
+                </ul>
+            </div>
+            
+            <div class="force-controls">
+                <h4>Mutation</h4>
+                <p>Mutation introduces new genetic variation:</p>
+                <ul>
+                    <li>In large populations, mutation counteracts loss of variation from drift</li>
+                    <li>In small populations, new mutations are likely to be lost by drift</li>
+                    <li>The mutation-drift balance determines genetic diversity</li>
+                </ul>
+            </div>
+            
+            <div class="force-controls">
+                <h4>Considerations for Wildlife Management</h4>
+                <p>When managing small populations, consider:</p>
+                <ul>
+                    <li>Minimum viable population size to maintain diversity</li>
+                    <li>Genetic rescue through controlled migration</li>
+                    <li>Monitoring for inbreeding depression</li>
+                    <li>Founder selection for reintroduction programs</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Simulation Parameters</h2>
+        <div class="control-panel">
+            <div class="control-group">
+                <label for="populationSize">Population Size (N):</label>
+                <input type="number" id="populationSize" min="5" max="1000" value="100">
+                <input type="range" id="populationSizeSlider" min="5" max="1000" value="100" step="5">
+            </div>
+            
+            <div class="control-group">
+                <label for="initialA1">Initial Frequency of A1 Allele (p):</label>
+                <input type="number" id="initialA1" min="0" max="1" step="0.01" value="0.5">
+                <input type="range" id="initialA1Slider" min="0" max="100" value="50">
+            </div>
+            
+            <div class="control-group">
+                <label for="generations">Number of Generations:</label>
+                <input type="number" id="generations" min="10" max="500" value="100">
+                <input type="range" id="generationsSlider" min="10" max="500" value="100">
+            </div>
+            
+            <div class="control-group">
+                <label for="trials">Number of Trials:</label>
+                <input type="number" id="trials" min="1" max="20" value="5">
+                <input type="range" id="trialsSlider" min="1" max="20" value="5">
+            </div>
+        </div>
+        
+        <h3>Evolutionary Forces</h3>
+        <div class="control-panel">
+            <div class="control-group">
+                <label for="selectionType">Selection Type:</label>
+                <select id="selectionType">
+                    <option value="none">None</option>
+                    <option value="directionalA1">Directional (Favor A1)</option>
+                    <option value="directionalA2">Directional (Favor A2)</option>
+                    <option value="stabilizing">Stabilizing</option>
+                    <option value="disruptive">Disruptive</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="selectionStrength">Selection Strength:</label>
+                <input type="number" id="selectionStrength" min="0" max="1" step="0.1" value="0.1">
+                <input type="range" id="selectionStrengthSlider" min="0" max="10" value="1">
+            </div>
+            
+            <div class="control-group">
+                <label for="migrationRate">Migration Rate:</label>
+                <input type="number" id="migrationRate" min="0" max="0.5" step="0.01" value="0">
+                <input type="range" id="migrationRateSlider" min="0" max="50" value="0">
+            </div>
+            
+            <div class="control-group">
+                <label for="migrationA1">Migration A1 Frequency:</label>
+                <input type="number" id="migrationA1" min="0" max="1" step="0.1" value="0.5">
+                <input type="range" id="migrationA1Slider" min="0" max="10" value="5">
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="runSimulation">Run Simulation</button>
+            <button id="downloadData">Download Data</button>
+            <button id="reset">Reset</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Results</h2>
+        
+        <div class="summary-stats">
+            <div class="stat-box">
+                <div class="stat-label">Fixation Events (A1)</div>
+                <div class="stat-value" id="fixationA1">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Fixation Events (A2)</div>
+                <div class="stat-value" id="fixationA2">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Average Final p</div>
+                <div class="stat-value" id="avgFinalP">0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Generations to Fixation</div>
+                <div class="stat-value" id="avgFixationTime">-</div>
+            </div>
+        </div>
+        
+        <h3>Allele Frequency Over Time</h3>
+        <div class="chart-container">
+            <canvas id="frequencyChart"></canvas>
+        </div>
+        
+        <h3>Final Frequencies by Trial</h3>
+        <div class="chart-container">
+            <canvas id="finalFrequenciesChart"></canvas>
+        </div>
+        
+        <h3>Genetic Diversity Over Time</h3>
+        <div class="chart-container">
+            <canvas id="diversityChart"></canvas>
+        </div>
+        
+        <h3>Data Table</h3>
+        <div style="overflow-x: auto;">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Trial</th>
+                        <th>Generation</th>
+                        <th>Frequency A1 (p)</th>
+                        <th>Frequency A2 (q)</th>
+                        <th>Heterozygosity</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const populationSizeInput = document.getElementById('populationSize');
+        const populationSizeSlider = document.getElementById('populationSizeSlider');
+        const initialA1Input = document.getElementById('initialA1');
+        const initialA1Slider = document.getElementById('initialA1Slider');
+        const generationsInput = document.getElementById('generations');
+        const generationsSlider = document.getElementById('generationsSlider');
+        const trialsInput = document.getElementById('trials');
+        const trialsSlider = document.getElementById('trialsSlider');
+        const selectionTypeInput = document.getElementById('selectionType');
+        const selectionStrengthInput = document.getElementById('selectionStrength');
+        const selectionStrengthSlider = document.getElementById('selectionStrengthSlider');
+        const migrationRateInput = document.getElementById('migrationRate');
+        const migrationRateSlider = document.getElementById('migrationRateSlider');
+        const migrationA1Input = document.getElementById('migrationA1');
+        const migrationA1Slider = document.getElementById('migrationA1Slider');
+        const runSimulationBtn = document.getElementById('runSimulation');
+        const downloadDataBtn = document.getElementById('downloadData');
+        const resetBtn = document.getElementById('reset');
+        const resultsTable = document.getElementById('resultsTable');
+        
+        // Connect sliders and inputs
+        populationSizeInput.addEventListener('input', () => populationSizeSlider.value = populationSizeInput.value);
+        populationSizeSlider.addEventListener('input', () => populationSizeInput.value = populationSizeSlider.value);
+        
+        initialA1Input.addEventListener('input', () => initialA1Slider.value = initialA1Input.value * 100);
+        initialA1Slider.addEventListener('input', () => initialA1Input.value = (initialA1Slider.value / 100).toFixed(2));
+        
+        generationsInput.addEventListener('input', () => generationsSlider.value = generationsInput.value);
+        generationsSlider.addEventListener('input', () => generationsInput.value = generationsSlider.value);
+        
+        trialsInput.addEventListener('input', () => trialsSlider.value = trialsInput.value);
+        trialsSlider.addEventListener('input', () => trialsInput.value = trialsSlider.value);
+        
+        selectionStrengthInput.addEventListener('input', () => selectionStrengthSlider.value = selectionStrengthInput.value * 10);
+        selectionStrengthSlider.addEventListener('input', () => selectionStrengthInput.value = (selectionStrengthSlider.value / 10).toFixed(1));
+        
+        migrationRateInput.addEventListener('input', () => migrationRateSlider.value = migrationRateInput.value * 100);
+        migrationRateSlider.addEventListener('input', () => migrationRateInput.value = (migrationRateSlider.value / 100).toFixed(2));
+        
+        migrationA1Input.addEventListener('input', () => migrationA1Slider.value = migrationA1Input.value * 10);
+        migrationA1Slider.addEventListener('input', () => migrationA1Input.value = (migrationA1Slider.value / 10).toFixed(1));
+        
+        // Initialize charts
+        const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
+        const finalFrequenciesCtx = document.getElementById('finalFrequenciesChart').getContext('2d');
+        const diversityCtx = document.getElementById('diversityChart').getContext('2d');
+        
+        let frequencyChart = new Chart(frequencyCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        title: {
+                            display: true,
+                            text: 'Allele Frequency'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Generation'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Change in A1 Allele Frequency Over Generations'
+                    }
+                }
+            }
+        });
+        
+        let finalFrequenciesChart = new Chart(finalFrequenciesCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Final A1 Frequency',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        title: {
+                            display: true,
+                            text: 'Final Frequency'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Trial'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Final A1 Frequency by Trial'
+                    }
+                }
+            }
+        });
+        
+        let diversityChart = new Chart(diversityCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 0.5,
+                        title: {
+                            display: true,
+                            text: 'Heterozygosity'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Generation'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Genetic Diversity (Heterozygosity) Over Time'
+                    }
+                }
+            }
+        });
+        
+        // Simulation data storage
+        let simulationData = [];
+        
+        // Tab switching function
+        function switchTab(tabIndex) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach((tab, index) => {
+                if (index === tabIndex) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            tabContents.forEach((content, index) => {
+                if (index === tabIndex) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+        
+        // Scenario application functions
+        function applyScenario(scenarioType) {
+            switch(scenarioType) {
+                case 'founder':
+                    populationSizeInput.value = 50;
+                    populationSizeSlider.value = 50;
+                    initialA1Input.value = 0.02; // Rare allele frequency
+                    initialA1Slider.value = 2;
+                    selectionTypeInput.value = 'none';
+                    break;
+                case 'bottleneck':
+                    populationSizeInput.value = 20;
+                    populationSizeSlider.value = 20;
+                    break;
+                case 'island':
+                    populationSizeInput.value = 30;
+                    populationSizeSlider.value = 30;
+                    migrationRateInput.value = 0.01;
+                    migrationRateSlider.value = 1;
+                    break;
+                case 'cheetah':
+                    populationSizeInput.value = 100;
+                    populationSizeSlider.value = 100;
+                    initialA1Input.value = 0.9; // High initial frequency
+                    initialA1Slider.value = 90;
+                    selectionTypeInput.value = 'directionalA2'; // Selection against the common allele
+                    selectionStrengthInput.value = 0.3;
+                    selectionStrengthSlider.value = 3;
+                    break;
+            }
+            
+            // Update all linked inputs
+            populationSizeInput.dispatchEvent(new Event('input'));
+            initialA1Input.dispatchEvent(new Event('input'));
+            migrationRateInput.dispatchEvent(new Event('input'));
+            selectionStrengthInput.dispatchEvent(new Event('input'));
+        }
+        
+        // Run simulation
+        runSimulationBtn.addEventListener('click', () => {
+            const populationSize = parseInt(populationSizeInput.value);
+            const initialA1 = parseFloat(initialA1Input.value);
+            const generations = parseInt(generationsInput.value);
+            const trials = parseInt(trialsInput.value);
+            const selectionType = selectionTypeInput.value;
+            const selectionStrength = parseFloat(selectionStrengthInput.value);
+            const migrationRate = parseFloat(migrationRateInput.value);
+            const migrationA1 = parseFloat(migrationA1Input.value);
+            
+            // Validate inputs
+            if (initialA1 < 0 || initialA1 > 1) {
+                alert('Initial frequency of A1 must be between 0 and 1');
+                return;
+            }
+            
+            // Run simulation
+            simulationData = runGeneticDriftSimulation(
+                populationSize, 
+                initialA1, 
+                generations, 
+                trials,
+                selectionType,
+                selectionStrength,
+                migrationRate,
+                migrationA1
+            );
+            
+            // Update charts and table
+            updateCharts(simulationData, generations, trials);
+            updateTable(simulationData);
+            updateSummaryStats(simulationData, trials);
+        });
+        
+        // Reset simulation
+        resetBtn.addEventListener('click', () => {
+            populationSizeInput.value = 100;
+            populationSizeSlider.value = 100;
+            initialA1Input.value = 0.5;
+            initialA1Slider.value = 50;
+            generationsInput.value = 100;
+            generationsSlider.value = 100;
+            trialsInput.value = 5;
+            trialsSlider.value = 5;
+            selectionTypeInput.value = 'none';
+            selectionStrengthInput.value = 0.1;
+            selectionStrengthSlider.value = 1;
+            migrationRateInput.value = 0;
+            migrationRateSlider.value = 0;
+            migrationA1Input.value = 0.5;
+            migrationA1Slider.value = 5;
+            
+            // Update all linked inputs
+            populationSizeInput.dispatchEvent(new Event('input'));
+            initialA1Input.dispatchEvent(new Event('input'));
+            generationsInput.dispatchEvent(new Event('input'));
+            trialsInput.dispatchEvent(new Event('input'));
+            selectionStrengthInput.dispatchEvent(new Event('input'));
+            migrationRateInput.dispatchEvent(new Event('input'));
+            migrationA1Input.dispatchEvent(new Event('input'));
+            
+            // Clear charts and table
+            frequencyChart.data.labels = [];
+            frequencyChart.data.datasets = [];
+            frequencyChart.update();
+            
+            finalFrequenciesChart.data.labels = [];
+            finalFrequenciesChart.data.datasets[0].data = [];
+            finalFrequenciesChart.update();
+            
+            diversityChart.data.labels = [];
+            diversityChart.data.datasets = [];
+            diversityChart.update();
+            
+            resultsTable.querySelector('tbody').innerHTML = '';
+            
+            // Reset summary stats
+            document.getElementById('fixationA1').textContent = '0';
+            document.getElementById('fixationA2').textContent = '0';
+            document.getElementById('avgFinalP').textContent = '0.00';
+            document.getElementById('avgFixationTime').textContent = '-';
+            
+            simulationData = [];
+        });
+        
+        // Download data
+        downloadDataBtn.addEventListener('click', () => {
+            if (simulationData.length === 0) {
+                alert('No data to download. Please run the simulation first.');
+                return;
+            }
+            
+            let csvContent = "Trial,Generation,Frequency A1,Frequency A2,Heterozygosity\n";
+            
+            simulationData.forEach(trial => {
+                trial.frequencies.forEach((freq, gen) => {
+                    const heterozygosity = 2 * freq * (1 - freq);
+                    csvContent += `${trial.trial},${gen + 1},${freq},${(1 - freq).toFixed(4)},${heterozygosity.toFixed(4)}\n`;
+                });
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "genetic_drift_data.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+        
+        // Simulation functions
+        function runGeneticDriftSimulation(
+            populationSize, 
+            initialA1, 
+            generations, 
+            trials,
+            selectionType,
+            selectionStrength,
+            migrationRate,
+            migrationA1
+        ) {
+            const results = [];
+            
+            for (let trial = 1; trial <= trials; trial++) {
+                let frequencies = [initialA1];
+                let heterozygosities = [2 * initialA1 * (1 - initialA1)];
+                let currentP = initialA1;
+                let fixationGeneration = null;
+                
+                for (let gen = 1; gen < generations; gen++) {
+                    // Apply migration if enabled
+                    if (migrationRate > 0 && Math.random() < migrationRate) {
+                        // Migrant alleles come from a source population with fixed A1 frequency
+                        currentP = (1 - migrationRate) * currentP + migrationRate * migrationA1;
+                    }
+                    
+                    // Simulate genetic drift for one generation
+                    let a1Count = 0;
+                    const totalAlleles = 2 * populationSize;
+                    
+                    for (let i = 0; i < totalAlleles; i++) {
+                        // Apply selection if enabled
+                        let selectionProbability = currentP;
+                        
+                        if (selectionType !== 'none') {
+                            if (selectionType === 'directionalA1') {
+                                // Favor A1 allele
+                                selectionProbability = currentP * (1 + selectionStrength) / 
+                                    (currentP * (1 + selectionStrength) + (1 - currentP));
+                            } else if (selectionType === 'directionalA2') {
+                                // Favor A2 allele
+                                selectionProbability = currentP / 
+                                    (currentP + (1 - currentP) * (1 + selectionStrength));
+                            } else if (selectionType === 'stabilizing') {
+                                // Favor heterozygotes (overdominance)
+                                const fitnessAA = 1 - selectionStrength;
+                                const fitnessAa = 1;
+                                const fitnessaa = 1 - selectionStrength;
+                                
+                                const meanFitness = 
+                                    currentP * currentP * fitnessAA + 
+                                    2 * currentP * (1 - currentP) * fitnessAa + 
+                                    (1 - currentP) * (1 - currentP) * fitnessaa;
+                                
+                                selectionProbability = (currentP * currentP * fitnessAA + 
+                                    currentP * (1 - currentP) * fitnessAa) / meanFitness;
+                            } else if (selectionType === 'disruptive') {
+                                // Favor homozygotes (underdominance)
+                                const fitnessAA = 1 + selectionStrength;
+                                const fitnessAa = 1;
+                                const fitnessaa = 1 + selectionStrength;
+                                
+                                const meanFitness = 
+                                    currentP * currentP * fitnessAA + 
+                                    2 * currentP * (1 - currentP) * fitnessAa + 
+                                    (1 - currentP) * (1 - currentP) * fitnessaa;
+                                
+                                selectionProbability = (currentP * currentP * fitnessAA + 
+                                    currentP * (1 - currentP) * fitnessAa) / meanFitness;
+                            }
+                        }
+                        
+                        if (Math.random() < selectionProbability) {
+                            a1Count++;
+                        }
+                    }
+                    
+                    currentP = a1Count / totalAlleles;
+                    frequencies.push(currentP);
+                    heterozygosities.push(2 * currentP * (1 - currentP));
+                    
+                    // Check for fixation
+                    if (fixationGeneration === null && (currentP === 0 || currentP === 1)) {
+                        fixationGeneration = gen;
+                    }
+                }
+                
+                results.push({
+                    trial: trial,
+                    frequencies: frequencies,
+                    heterozygosities: heterozygosities,
+                    finalP: frequencies[frequencies.length - 1],
+                    fixationGeneration: fixationGeneration
+                });
+            }
+            
+            return results;
+        }
+        
+        function updateCharts(data, generations, trials) {
+            // Update frequency chart
+            const generationsArray = Array.from({length: generations}, (_, i) => i + 1);
+            
+            frequencyChart.data.labels = generationsArray;
+            frequencyChart.data.datasets = [];
+            
+            const colors = [
+                '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', 
+                '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe',
+                '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000',
+                '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080'
+            ];
+            
+            data.forEach((trial, index) => {
+                frequencyChart.data.datasets.push({
+                    label: `Trial ${trial.trial}`,
+                    data: trial.frequencies,
+                    borderColor: colors[index % colors.length],
+                    backgroundColor: colors[index % colors.length] + '20',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false
+                });
+            });
+            
+            frequencyChart.update();
+            
+            // Update final frequencies chart
+            finalFrequenciesChart.data.labels = data.map(trial => `Trial ${trial.trial}`);
+            finalFrequenciesChart.data.datasets[0].data = data.map(trial => trial.finalP);
+            finalFrequenciesChart.update();
+            
+            // Update diversity chart
+            diversityChart.data.labels = generationsArray;
+            diversityChart.data.datasets = [];
+            
+            data.forEach((trial, index) => {
+                diversityChart.data.datasets.push({
+                    label: `Trial ${trial.trial}`,
+                    data: trial.heterozygosities,
+                    borderColor: colors[index % colors.length],
+                    backgroundColor: colors[index % colors.length] + '20',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false
+                });
+            });
+            
+            diversityChart.update();
+        }
+        
+        function updateTable(data) {
+            const tbody = resultsTable.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            data.forEach(trial => {
+                trial.frequencies.forEach((freq, gen) => {
+                    const heterozygosity = 2 * freq * (1 - freq);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${trial.trial}</td>
+                        <td>${gen + 1}</td>
+                        <td>${freq.toFixed(4)}</td>
+                        <td>${(1 - freq).toFixed(4)}</td>
+                        <td>${heterozygosity.toFixed(4)}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+        }
+        
+        function updateSummaryStats(data, trials) {
+            const fixationA1 = data.filter(trial => trial.finalP === 1).length;
+            const fixationA2 = data.filter(trial => trial.finalP === 0).length;
+            const avgFinalP = data.reduce((sum, trial) => sum + trial.finalP, 0) / trials;
+            
+            const fixationGenerations = data
+                .filter(trial => trial.fixationGeneration !== null)
+                .map(trial => trial.fixationGeneration);
+            
+            const avgFixationTime = fixationGenerations.length > 0 
+                ? (fixationGenerations.reduce((a, b) => a + b, 0) / fixationGenerations.length).toFixed(1)
+                : '-';
+            
+            document.getElementById('fixationA1').textContent = fixationA1;
+            document.getElementById('fixationA2').textContent = fixationA2;
+            document.getElementById('avgFinalP').textContent = avgFinalP.toFixed(4);
+            document.getElementById('avgFixationTime').textContent = avgFixationTime;
+        }
+    </script>
+</body>
+</html>
