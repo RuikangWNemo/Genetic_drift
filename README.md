@@ -1,3 +1,174 @@
+# Comprehensive Manual for Genetic Drift Simulation Tool
+
+## Overview
+
+This web application simulates genetic drift, a fundamental evolutionary process where random events cause changes in allele frequencies in populations over generations. The simulation allows you to explore how population size, initial conditions, and evolutionary forces interact to shape genetic diversity.
+This tool is designed for BIOL-208 Introduction to General Ecology (2025 Fall), taught by professor Chuanhui Gu.
+Designed by Ruikang Wang, a Duke Kunshan University Student from class of 2026, majoring in Environmental Science with the track of Biogeochemistry. Co-Collaborated with LLM Deepseek R2 Reasoning model.
+
+## Table of Contents
+1. [Understanding Genetic Drift](#understanding-genetic-drift)
+2. [Simulation Parameters](#simulation-parameters)
+3. [Evolutionary Forces](#evolutionary-forces)
+4. [Real-World Scenarios](#real-world-scenarios)
+5. [Interpreting Results](#interpreting-results)
+6. [Frequently Asked Questions](#frequently-asked-questions)
+7. [Educational Applications](#educational-applications)
+
+## Understanding Genetic Drift
+
+Genetic drift is the random fluctuation of allele frequencies in a population due to chance events. Unlike natural selection, which is directional and adaptive, genetic drift is random and can lead to the loss or fixation of alleles regardless of their adaptive value.
+
+**Key characteristics:**
+- More pronounced in small populations
+- Can lead to loss of genetic variation
+- May cause maladaptive traits to become fixed
+- Interacts with other evolutionary forces
+
+## Simulation Parameters
+
+### 1. Population Size (N)
+- **What it represents:** The number of breeding individuals in the population
+- **Range:** 5 to 1000 individuals
+- **Effect:** Smaller populations experience stronger genetic drift. The probability that an allele will become fixed by chance alone is equal to its initial frequency, but this happens much faster in small populations.
+
+### 2. Initial Frequency of A1 Allele (p)
+- **What it represents:** The starting proportion of the A1 allele in the population
+- **Range:** 0 to 1 (0% to 100%)
+- **Effect:** Determines the starting point for the simulation. Alleles with lower initial frequencies are more likely to be lost by drift.
+
+### 3. Number of Generations
+- **What it represents:** How many generations to simulate
+- **Range:** 10 to 500 generations
+- **Effect:** Longer simulations allow more time for drift to cause fixation or loss of alleles.
+
+### 4. Number of Trials
+- **What it represents:** How many independent populations to simulate with the same parameters
+- **Range:** 1 to 20 trials
+- **Effect:** Multiple trials demonstrate the random nature of genetic drift. Identical starting conditions can lead to different outcomes.
+
+## Evolutionary Forces
+
+### 1. Selection Type
+- **None:** Pure genetic drift without selection
+- **Directional (Favor A1/A2):** Consistent selection for one allele
+- **Stabilizing:** Selection favoring heterozygotes (overdominance)
+- **Disruptive:** Selection favoring homozygotes (underdominance)
+
+### 2. Selection Strength
+- **What it represents:** The intensity of selection
+- **Range:** 0 to 1 (weak to strong)
+- **Effect:** Stronger selection can overcome genetic drift, especially in larger populations.
+
+### 3. Migration Rate
+- **What it represents:** Proportion of migrants entering the population each generation
+- **Range:** 0 to 0.5 (0% to 50%)
+- **Effect:** Migration introduces new genetic variation and can counteract the effects of drift.
+
+### 4. Migration A1 Frequency
+- **What it represents:** The frequency of A1 allele in the migrant population
+- **Range:** 0 to 1 (0% to 100%)
+- **Effect:** Determines what genetic material is introduced through migration.
+
+## Real-World Scenarios
+
+The simulation includes four preset scenarios based on real-world examples:
+
+### 1. Founder Effect (Amish Population)
+Simulates how small founding populations can lead to elevated frequencies of rare alleles.
+
+### 2. Population Bottleneck (Northern Elephant Seals)
+Demonstrates how severe population reductions diminish genetic diversity.
+
+### 3. Island Biogeography (Galápagos Finches)
+Shows how isolated small populations experience drift alongside selection.
+
+### 4. Conservation Genetics (Cheetahs)
+Illustrates conservation challenges from reduced genetic diversity.
+
+## Interpreting Results
+
+### 1. Allele Frequency Over Time Chart
+Shows how the frequency of the A1 allele changes across generations for each trial. Lines reaching 1 indicate fixation of A1; lines reaching 0 indicate loss of A1 (fixation of A2).
+
+### 2. Final Frequencies by Trial Chart
+Displays the ending frequency of A1 for each trial, highlighting the variation in outcomes.
+
+### 3. Genetic Diversity Over Time Chart
+Tracks heterozygosity (2pq) over generations. Genetic diversity typically declines due to drift unless maintained by other forces.
+
+### 4. Summary Statistics
+- **Fixation Events (A1/A2):** Counts how many trials ended with fixation of each allele
+- **Average Final p:** The mean ending frequency of A1 across all trials
+- **Generations to Fixation:** Average time until fixation occurred (if it did)
+
+### 5. Data Table
+Provides detailed numerical data for each generation of each trial.
+
+## Frequently Asked Questions
+
+### Q1: Why do small populations experience stronger genetic drift?
+A: In small populations, chance events have a greater proportional impact. The sampling error between generations is larger when fewer individuals contribute to the next generation.
+
+### Q2: Can genetic drift cause harmful alleles to become fixed?
+A: Yes. Genetic drift is random and not adaptive. Harmful alleles can increase in frequency and even become fixed through chance alone, especially in small populations.
+
+### Q3: How does genetic drift interact with natural selection?
+A: In large populations, selection typically dominates. In small populations, drift can override weak selection. The relative strength depends on population size and selection coefficient.
+
+### Q4: What is the difference between founder effect and bottleneck effect?
+A: Both reduce genetic diversity. Founder effect occurs when a new population is established by a small number of individuals. Bottleneck effect occurs when an existing population undergoes a drastic reduction in size.
+
+### Q5: Why does genetic diversity decrease over time due to drift?
+A: Genetic drift is a random sampling process. Each generation, alleles may be lost by chance, reducing heterozygosity. Eventually, this leads to fixation of one allele and loss of the other.
+
+### Q6: How does migration counteract genetic drift?
+A: Migration introduces new genetic variation from other populations, preventing the loss of alleles that might otherwise disappear due to drift in isolated populations.
+
+### Q7: What is the expected time to fixation for a neutral allele?
+A: For a neutral allele in a diploid population of size N, the expected time to fixation is approximately 4N generations.
+
+### Q8: Why do we run multiple trials?
+A: Genetic drift is a random process. Multiple trials with identical parameters demonstrate this randomness and allow us to estimate probabilities of different outcomes.
+
+## Educational Applications
+
+This simulation can be used to:
+
+1. **Compare population sizes:** Run simulations with large vs. small populations to observe differences in drift strength
+2. **Test initial conditions:** See how different starting frequencies affect fixation probabilities
+3. **Explore evolutionary forces:** Add selection or migration to see how they interact with drift
+4. **Replicate real scenarios:** Use the preset scenarios to model documented biological examples
+5. **Study probability concepts:** Observe how random processes lead to predictable patterns over many trials
+
+## Technical Notes
+
+- The simulation uses binomial sampling to model genetic drift
+- Selection is implemented through fitness coefficients that alter reproductive success
+- Migration is modeled as gene flow from an external population with fixed allele frequencies
+- All calculations assume diploid organisms with random mating
+
+## Further Exploration
+
+To extend your learning:
+1. Research the actual case studies referenced in the scenarios
+2. Compare the simulation results to mathematical predictions from population genetics
+3. Design experiments to test specific hypotheses about genetic drift
+4. Investigate how genetic drift affects conservation efforts for endangered species
+
+This simulation provides a powerful tool for visualizing and understanding one of the fundamental processes of evolution. By adjusting parameters and observing outcomes, you can develop intuition for how random processes shape genetic diversity in natural populations.
+
+
+
+
+
+
+
+
+
+
+# Key Questions Asked
+
 # Genetic_drift
 A genetic drift simulator
 
